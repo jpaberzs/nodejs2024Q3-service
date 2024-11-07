@@ -64,8 +64,12 @@ export class UsersService {
   }
 
   remove(id: string) {
+    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
+
     const index = this.users.findIndex((item) => item.id === id);
+
     if (index === -1) throw new NotFoundException('User not found');
+
     this.users.splice(index, 1);
   }
 }
