@@ -8,13 +8,16 @@ import {
   HttpStatus,
   HttpCode,
   Put,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from './../dto/create-user.dto';
 import { UpdateUserDto } from './../dto/update-user.dto';
 import { User } from './../interfaces/user.interface';
 
-@Controller('users')
+@Controller('user')
+@UsePipes(new ValidationPipe())
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -25,17 +28,20 @@ export class UsersController {
   }
 
   @Get()
-  findAll(): User[] {
+  findAll(): Omit<User, 'password'>[] {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): User {
+  findOne(@Param('id') id: string): Omit<User, 'password'> {
     return this.usersService.findOne(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): User {
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Omit<User, 'password'> {
     return this.usersService.update(id, updateUserDto);
   }
 
