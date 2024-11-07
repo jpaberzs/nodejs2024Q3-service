@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -46,8 +47,19 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto): User {
+    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
+
     const user = this.findOne(id);
-    Object.assign(user, updateUserDto);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    if (user.password !== updateUserDto.oldPassword)
+      throw new ForbiddenException('Old password is incorrect');
+
+    user.password = updateUserDto.newPassword;
+    user.version += 1;
+    user.updatedAt = Date.now();
+
     return user;
   }
 
