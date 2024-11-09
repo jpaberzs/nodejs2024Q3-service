@@ -11,13 +11,13 @@ export class UsersController extends BaseController<User> {
     super(usersService);
   }
 
-  // @Post()
-  // createUser(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.createUser(createUserDto);
-  // }
+  @Post()
+  async createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
+  }
 
   @Put(':id')
-  updatePassword(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+  async updatePassword(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.usersService.updatePassword(id, dto);
   }
 }
