@@ -9,6 +9,10 @@ import { v4 as uuidv4, validate as isUUID } from 'uuid';
 export class BaseService<T extends { id: string }> {
   protected items: T[] = [];
 
+  constructor(items: T[]) {
+    this.items = items;
+  }
+
   async getAll(): Promise<T[]> {
     return this.items;
   }
@@ -18,7 +22,7 @@ export class BaseService<T extends { id: string }> {
 
     const item = this.items.find((item) => item.id === id);
 
-    if (!item) throw new NotFoundException('User not found');
+    if (!item) throw new NotFoundException('Record not found');
 
     return item;
   }

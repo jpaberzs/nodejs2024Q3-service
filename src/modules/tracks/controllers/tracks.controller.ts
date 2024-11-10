@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { BaseController } from 'src/common/controllers/base.controller';
 import { Track } from '../interfaces/track';
 import { TracksService } from '../services/tracks.service';
@@ -21,6 +30,6 @@ export class TracksController extends BaseController<Track> {
     @Param('id') id: string,
     @Body() updateTrackDto: UpdateTrackDTO,
   ): Promise<Track> {
-    return await this.tracksService.update(id, updateTrackDto);
+    return await this.tracksService.updateTrack(id, updateTrackDto);
   }
 }

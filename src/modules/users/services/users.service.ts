@@ -10,9 +10,13 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { randomUUID } from 'crypto';
 import { BaseService } from 'src/common/services/base.service';
 import { isUUID } from 'class-validator';
+import { userData } from 'src/database/database';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
+  constructor() {
+    super(userData);
+  }
   createUser(createUserDto: CreateUserDto) {
     const newUser: User = {
       id: randomUUID(),

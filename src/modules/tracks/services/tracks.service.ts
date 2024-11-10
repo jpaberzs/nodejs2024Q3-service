@@ -7,15 +7,20 @@ import { BaseService } from 'src/common/services/base.service';
 import { Track } from '../interfaces/track';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { CreateTrackDTO } from '../dto/create-track.dto';
+import { trackData } from 'src/database/database';
 
 @Injectable()
 export class TracksService extends BaseService<Track> {
+  constructor() {
+    super(trackData);
+  }
+
   createTrack(CreateTrackDTO: CreateTrackDTO) {
     const newTrack: Track = {
       id: uuidv4(),
       name: CreateTrackDTO.name,
-      artistId: CreateTrackDTO.artistId,
-      albumId: CreateTrackDTO.albumId,
+      artistId: CreateTrackDTO.artistId || null,
+      albumId: CreateTrackDTO.albumId || null,
       duration: CreateTrackDTO.duration,
     };
 
