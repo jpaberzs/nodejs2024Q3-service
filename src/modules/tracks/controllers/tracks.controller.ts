@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Param, Post, Put } from '@nestjs/common';
 import { BaseController } from 'src/common/controllers/base.controller';
 import { Track } from '../interfaces/track';
 import { TracksService } from '../services/tracks.service';
