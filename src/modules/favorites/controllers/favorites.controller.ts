@@ -7,13 +7,12 @@ import {
   HttpStatus,
   Param,
   Post,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { FavoritesService } from '../services/favorites.service';
 import { TracksService } from 'src/modules/tracks/services/tracks.service';
 import { AlbumService } from 'src/modules/album/services/album.service';
 import { ArtistsService } from 'src/modules/artists/services/artists.service';
-import { v4 as uuidv4, validate as isUUID } from 'uuid';
+import { validate as isUUID } from 'uuid';
 
 @Controller('favs')
 export class FavoritesController {

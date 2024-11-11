@@ -1,7 +1,6 @@
 import { CreateAlbumDTO } from './../dto/create-album.dto';
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';

@@ -3,7 +3,6 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FavoritesRequest, FavoritesResponse } from '../interfaces/interface';
 import {
   albumData,
   artistData,
