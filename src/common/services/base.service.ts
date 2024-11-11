@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 
@@ -17,12 +18,16 @@ export class BaseService<T extends { id: string }> {
     return this.items;
   }
 
-  async getById(id: string): Promise<T> {
+  async getById(id: string, statusCode?: number): Promise<T> {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
     const item = this.items.find((item) => item.id === id);
 
-    if (!item) throw new NotFoundException('Record not found');
+    if (statusCode === 422) {
+      if (!item) throw new UnprocessableEntityException('Item not found');
+    } else {
+      if (!item) throw new NotFoundException('Record not found');
+    }
 
     return item;
   }

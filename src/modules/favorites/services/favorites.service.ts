@@ -3,7 +3,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { FavoritesResponse } from '../interfaces/interface';
+import { FavoritesRequest, FavoritesResponse } from '../interfaces/interface';
 import {
   albumData,
   artistData,
@@ -13,8 +13,28 @@ import {
 
 @Injectable()
 export class FavoritesService {
-  getAllFavorites(): FavoritesResponse {
-    return favoritesData;
+  getAllFavorites() {
+    const tracks = favoritesData.tracks
+      .map((id) => {
+        return trackData.find((track) => track.id === id);
+      })
+      .filter((track) => track);
+    const artists = favoritesData.artists
+      .map((id) => {
+        return artistData.find((artist) => artist.id === id);
+      })
+      .filter((track) => track);
+    const albums = favoritesData.albums
+      .map((id) => {
+        return albumData.find((album) => album.id === id);
+      })
+      .filter((track) => track);
+
+    return {
+      artists,
+      albums,
+      tracks,
+    };
   }
 
   addFavorite(type: 'artist' | 'album' | 'track', item) {
@@ -25,14 +45,15 @@ export class FavoritesService {
     }
 
     const favorites = this.getFavoritesArray(type);
-    if (!favorites.some((fav) => fav.id === item.id)) {
-      favorites.push(item);
+
+    if (!favorites.some((fav) => fav === item.id)) {
+      favorites.push(item.id);
     }
   }
 
   removeFavorite(type: 'artist' | 'album' | 'track', id: string) {
     const favorites = this.getFavoritesArray(type);
-    const index = favorites.findIndex((fav) => fav.id === id);
+    const index = favorites.findIndex((fav) => fav === id);
 
     if (index === -1) throw new NotFoundException(`${type} is not a favorite`);
 

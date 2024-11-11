@@ -33,9 +33,7 @@ export class FavoritesController {
   async addTrackToFavorites(@Param('id') id: string) {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
-    const track = await this.tracksService.getById(id);
-
-    // if (!track) throw new UnprocessableEntityException('Track not found');
+    const track = await this.tracksService.getById(id, 422);
 
     this.favoritesService.addFavorite('track', track);
 
@@ -54,9 +52,7 @@ export class FavoritesController {
   async addAlbumToFavorites(@Param('id') id: string) {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
-    const album = await this.albumsService.getById(id);
-
-    // if (!album) throw new UnprocessableEntityException('Album not found');
+    const album = await this.albumsService.getById(id, 422);
 
     this.favoritesService.addFavorite('album', album);
 
@@ -75,9 +71,7 @@ export class FavoritesController {
   async addArtistToFavorites(@Param('id') id: string) {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
-    const artist = await this.artistsService.getById(id);
-
-    // if (!artist) throw new UnprocessableEntityException('Artist not found');
+    const artist = await this.artistsService.getById(id, 422);
 
     this.favoritesService.addFavorite('artist', artist);
 
