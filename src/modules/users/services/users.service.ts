@@ -7,9 +7,8 @@ import {
 import { User } from '../interfaces/user.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { randomUUID } from 'crypto';
+import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { BaseService } from 'src/common/services/base.service';
-import { isUUID } from 'class-validator';
 import { userData } from 'src/database/database';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class UsersService extends BaseService<User> {
   }
   createUser(createUserDto: CreateUserDto) {
     const newUser: User = {
-      id: randomUUID(),
+      id: uuidv4(),
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
