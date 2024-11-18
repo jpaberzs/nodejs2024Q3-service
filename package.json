@@ -20,6 +20,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:users": "jest --testMatch \"<rootDir>/users.e2e.spec.ts\" --noStackTrace --runInBand",
+    "test:artists": "jest --testMatch \"<rootDir>/artists.e2e.spec.ts\" --noStackTrace --runInBand",
+    "test:tracks": "jest --testMatch \"<rootDir>/tracks.e2e.spec.ts\" --noStackTrace --runInBand",
     "swc": "nest start swc",
     "docker:up": "docker-compose up --build --watch",
     "docker:down": "docker-compose down"

@@ -23,13 +23,18 @@ export class UsersService extends BaseService<User> {
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: Math.floor(Date.now() / 1000),
+      updatedAt: Math.floor(Date.now() / 1000),
     };
 
-    const createdUser = await this.getPrismaModel().create({ data: newUser });
+    try {
+      const createdUser = await this.getPrismaModel().create({ data: newUser });
 
-    return this.excludePassword(createdUser);
+      return this.excludePassword(createdUser);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw new BadRequestException(error.message);
+    }
   }
 
   async updatePassword(
@@ -49,8 +54,8 @@ export class UsersService extends BaseService<User> {
       where: { id },
       data: {
         password: newPassword,
-        version: user.version + 1,
-        updatedAt: new Date(),
+        version: Number(user.version) + 1,
+        updatedAt: Math.floor(Date.now() / 1000),
       },
     });
 
@@ -60,12 +65,8 @@ export class UsersService extends BaseService<User> {
   }
 
   private excludePassword(user: User): Omit<User, 'password'> {
-    return {
-      id: user.id,
-      login: user.login,
-      version: user.version,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    const { password, ...result } = user;
+
+    return result;
   }
 }
