@@ -4,24 +4,35 @@ import {
   BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+// import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/prisma.service';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 
 @Injectable()
 export class BaseService<T extends { id: string }> {
-  protected items: T[] = [];
+  constructor(
+    public readonly prisma: PrismaService,
+    private readonly model: keyof PrismaService,
+  ) {}
 
-  constructor(items: T[]) {
-    this.items = items;
+  protected getPrismaModel() {
+    return this.prisma[this.model] as unknown as {
+      findMany: () => Promise<T[]>;
+      findUnique: (args: { where: { id: string } }) => Promise<T | null>;
+      create: (args: { data: Partial<T> }) => Promise<T>;
+      update: (args: { where: { id: string }; data: Partial<T> }) => Promise<T>;
+      delete: (args: { where: { id: string } }) => Promise<T>;
+    };
   }
 
   async getAll(): Promise<T[]> {
-    return this.items;
+    return await this.getPrismaModel().findMany();
   }
 
   async getById(id: string, statusCode?: number): Promise<T> {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
-    const item = this.items.find((item) => item.id === id);
+    const item = await this.getPrismaModel().findUnique({ where: { id } });
 
     if (statusCode === 422) {
       if (!item) throw new UnprocessableEntityException('Item not found');
@@ -32,12 +43,8 @@ export class BaseService<T extends { id: string }> {
     return item;
   }
 
-  async create(createDto: object): Promise<T> {
-    const newItem = { id: uuidv4(), ...createDto } as T;
-
-    this.items.push(newItem);
-
-    return newItem;
+  async create(createDto: T): Promise<T> {
+    return await this.getPrismaModel().create({ data: createDto });
   }
 
   async update(id: string, updateDto: object): Promise<T> {
@@ -49,16 +56,19 @@ export class BaseService<T extends { id: string }> {
 
     Object.assign(item, updateDto);
 
-    return item;
+    return await this.getPrismaModel().update({
+      where: { id },
+      data: updateDto,
+    });
   }
 
   async delete(id: string): Promise<void> {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
-    const index = this.items.findIndex((item) => item.id === id);
+    const item = await this.getById(id);
 
-    if (index === -1) throw new NotFoundException('Record not found');
+    if (!item) throw new NotFoundException('Record not found');
 
-    this.items.splice(index, 1);
+    this.getPrismaModel().delete({ where: { id } });
   }
 }

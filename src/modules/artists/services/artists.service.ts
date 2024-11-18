@@ -7,29 +7,33 @@ import { BaseService } from 'src/common/services/base.service';
 import { Artist } from '../interfaces/artist';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { CreateArtistDTO } from '../dto/create-artist.dto';
-import { artistData } from 'src/database/database';
+// import { artistData } from 'src/database/database';
 import { TracksService } from 'src/modules/tracks/services/tracks.service';
 import { AlbumService } from 'src/modules/album/services/album.service';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ArtistsService extends BaseService<Artist> {
   constructor(
     private readonly tracksService: TracksService,
     private readonly albumService: AlbumService,
+    prisma: PrismaService,
   ) {
-    super(artistData);
+    super(prisma, 'artist');
   }
 
-  createArtist(CreateTrackDTO: CreateArtistDTO) {
-    const newTrack: Artist = {
+  async createArtist(CreateTrackDTO: CreateArtistDTO) {
+    const newArtist: Artist = {
       id: uuidv4(),
       name: CreateTrackDTO.name,
       grammy: CreateTrackDTO.grammy,
     };
 
-    this.items.push(newTrack);
+    const createdArtist = await this.getPrismaModel().create({
+      data: newArtist,
+    });
 
-    return newTrack;
+    return createdArtist;
   }
 
   async updateArtist(id: string, updatedFields: Partial<Artist>) {
@@ -39,7 +43,13 @@ export class ArtistsService extends BaseService<Artist> {
 
     if (!artist) throw new NotFoundException('Artist not found');
 
-    const updatedArtist = { ...artist, ...updatedFields };
+    const updatedArtist = await this.getPrismaModel().update({
+      where: { id },
+      data: {
+        name: updatedFields.name,
+        grammy: updatedFields.grammy,
+      },
+    });
 
     Object.assign(artist, updatedArtist);
 
@@ -47,21 +57,24 @@ export class ArtistsService extends BaseService<Artist> {
   }
 
   async deleteArtist(id: string) {
+    const artist = await this.getById(id);
+    if (!artist) throw new NotFoundException('Artist not found');
+
     const tracks = await this.tracksService.getAll();
     const albums = await this.albumService.getAll();
 
-    tracks.forEach(async (track) => {
+    for (const track of tracks) {
       if (track.artistId === id) {
         await this.tracksService.updateTrack(track.id, { artistId: null });
       }
-    });
+    }
 
-    albums.forEach(async (album) => {
+    for (const album of albums) {
       if (album.artistId === id) {
         await this.albumService.updateAlbum(album.id, { artistId: null });
       }
-    });
+    }
 
-    await super.delete(id);
+    await this.getPrismaModel().delete({ where: { id } });
   }
 }

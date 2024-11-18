@@ -7,28 +7,27 @@ import { BaseService } from 'src/common/services/base.service';
 import { Track } from '../interfaces/track';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { CreateTrackDTO } from '../dto/create-track.dto';
-import { trackData } from 'src/database/database';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class TracksService extends BaseService<Track> {
-  constructor() {
-    super(trackData);
+  constructor(prisma: PrismaService) {
+    super(prisma, 'track');
   }
 
-  createTrack(CreateTrackDTO: CreateTrackDTO) {
+  async createTrack(createTrackDTO: CreateTrackDTO) {
     const newTrack: Track = {
       id: uuidv4(),
-      name: CreateTrackDTO.name,
-      artistId: CreateTrackDTO.artistId || null,
-      albumId: CreateTrackDTO.albumId || null,
-      duration: CreateTrackDTO.duration,
+      name: createTrackDTO.name,
+      artistId: createTrackDTO.artistId || null,
+      albumId: createTrackDTO.albumId || null,
+      duration: createTrackDTO.duration,
     };
 
-    this.items.push(newTrack);
+    const createdTrack = await this.getPrismaModel().create({ data: newTrack });
 
-    return newTrack;
+    return createdTrack;
   }
-
   async updateTrack(id: string, updatedFields: Partial<Track>) {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
@@ -36,10 +35,22 @@ export class TracksService extends BaseService<Track> {
 
     if (!track) throw new NotFoundException('Track not found');
 
-    const updatedTrack = { ...track, ...updatedFields };
-
-    Object.assign(track, updatedTrack);
+    const updatedTrack = await this.getPrismaModel().update({
+      where: { id },
+      data: {
+        ...updatedFields,
+      },
+    });
 
     return updatedTrack;
+  }
+  async deleteTrack(id: string) {
+    const track = await this.getById(id);
+
+    if (!track) throw new NotFoundException('Track not found');
+
+    await this.getPrismaModel().delete({ where: { id } });
+
+    return track;
   }
 }

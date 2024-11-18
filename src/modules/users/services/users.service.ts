@@ -10,25 +10,26 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { BaseService } from 'src/common/services/base.service';
 import { userData } from 'src/database/database';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
-  constructor() {
-    super(userData);
+  constructor(prisma: PrismaService) {
+    super(prisma, 'user');
   }
-  createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto) {
     const newUser: User = {
       id: uuidv4(),
       login: createUserDto.login,
       password: createUserDto.password,
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
-    this.items.push(newUser);
+    const createdUser = await this.getPrismaModel().create({ data: newUser });
 
-    return this.excludePassword(newUser);
+    return this.excludePassword(createdUser);
   }
 
   async updatePassword(
@@ -44,12 +45,14 @@ export class UsersService extends BaseService<User> {
     if (user.password !== oldPassword)
       throw new ForbiddenException('Old password is incorrect');
 
-    const updatedUser: User = {
-      ...user,
-      password: newPassword,
-      version: user.version + 1,
-      updatedAt: Date.now(),
-    };
+    const updatedUser = await this.getPrismaModel().update({
+      where: { id },
+      data: {
+        password: newPassword,
+        version: user.version + 1,
+        updatedAt: new Date(),
+      },
+    });
 
     Object.assign(user, updatedUser);
 

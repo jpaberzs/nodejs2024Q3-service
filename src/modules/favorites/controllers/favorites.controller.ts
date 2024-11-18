@@ -4,7 +4,9 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
 } from '@nestjs/common';
@@ -25,7 +27,12 @@ export class FavoritesController {
 
   @Get()
   async getFavorites() {
-    return this.favoritesService.getAllFavorites();
+    try {
+      const favorites = await this.favoritesService.getAllFavorites();
+      return { statusCode: HttpStatus.OK, data: favorites };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post('/track/:id')
@@ -39,12 +46,21 @@ export class FavoritesController {
     return { status: 'Track added to favorites' };
   }
 
-  @Delete('/track/:id')
+  @Delete(':type/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteTrackFromFavorites(@Param('id') id: string) {
-    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
-
-    this.favoritesService.removeFavorite('track', id);
+  async deleteTrackFromFavorites(
+    @Param('type') type: 'artist' | 'album' | 'track',
+    @Param('id') id: string,
+  ) {
+    try {
+      await this.favoritesService.removeFavorite(type, id);
+      return { statusCode: HttpStatus.NO_CONTENT };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Post('/album/:id')
@@ -58,14 +74,6 @@ export class FavoritesController {
     return { status: 'Album added to favorites' };
   }
 
-  @Delete('/album/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteAlbumFromFavorites(@Param('id') id: string) {
-    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
-
-    this.favoritesService.removeFavorite('album', id);
-  }
-
   @Post('/artist/:id')
   async addArtistToFavorites(@Param('id') id: string) {
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
@@ -75,13 +83,5 @@ export class FavoritesController {
     this.favoritesService.addFavorite('artist', artist);
 
     return { status: 'Artist added to favorites' };
-  }
-
-  @Delete('/artist/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteArtistFromFavorites(@Param('id') id: string) {
-    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
-
-    this.favoritesService.removeFavorite('artist', id);
   }
 }

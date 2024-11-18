@@ -8,14 +8,18 @@ import { BaseService } from 'src/common/services/base.service';
 import { Album } from '../interfaces/album';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { TracksService } from 'src/modules/tracks/services/tracks.service';
-import { albumData } from 'src/database/database';
+// import { albumData } from 'src/database/database';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class AlbumService extends BaseService<Album> {
-  constructor(private readonly tracksService: TracksService) {
-    super(albumData);
+  constructor(
+    private readonly tracksService: TracksService,
+    prisma: PrismaService,
+  ) {
+    super(prisma, 'album');
   }
-  createAlbum(createAlbumDTO: CreateAlbumDTO) {
+  async createAlbum(createAlbumDTO: CreateAlbumDTO) {
     const newAlbum: Album = {
       id: uuidv4(),
       name: createAlbumDTO.name,
@@ -23,9 +27,9 @@ export class AlbumService extends BaseService<Album> {
       artistId: createAlbumDTO.artistId || null,
     };
 
-    this.items.push(newAlbum);
+    const createdUser = await this.getPrismaModel().create({ data: newAlbum });
 
-    return newAlbum;
+    return createdUser;
   }
 
   async updateAlbum(id: string, updatedFields: Partial<Album>) {
@@ -35,7 +39,12 @@ export class AlbumService extends BaseService<Album> {
 
     if (!album) throw new NotFoundException('Album not found');
 
-    const updatedAlbum = { ...album, ...updatedFields };
+    const updatedAlbum = await this.getPrismaModel().update({
+      where: { id },
+      data: {
+        ...updatedFields,
+      },
+    });
 
     Object.assign(album, updatedAlbum);
 
@@ -44,6 +53,7 @@ export class AlbumService extends BaseService<Album> {
 
   async deleteAlbum(id: string) {
     const album = await this.getById(id);
+
     if (!album) throw new NotFoundException('Album not found');
 
     const tracks = await this.tracksService.getAll();
@@ -54,7 +64,8 @@ export class AlbumService extends BaseService<Album> {
       }
     }
 
-    await this.delete(id);
+    await this.getPrismaModel().delete({ where: { id } });
+
     return album;
   }
 }
