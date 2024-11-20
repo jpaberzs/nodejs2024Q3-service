@@ -15,7 +15,7 @@ export class BaseService<T extends { id: string }> {
     private readonly model: keyof PrismaService,
   ) {}
 
-  protected getPrismaModel() {
+  public getPrismaModel() {
     return this.prisma[this.model] as unknown as {
       findMany: () => Promise<T[]>;
       findUnique: (args: { where: { id: string } }) => Promise<T | null>;
@@ -63,12 +63,14 @@ export class BaseService<T extends { id: string }> {
   }
 
   async delete(id: string): Promise<void> {
+    console.log(id);
+
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
     const item = await this.getById(id);
 
     if (!item) throw new NotFoundException('Record not found');
 
-    this.getPrismaModel().delete({ where: { id } });
+    await this.getPrismaModel().delete({ where: { id } });
   }
 }

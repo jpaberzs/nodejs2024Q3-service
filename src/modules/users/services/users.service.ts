@@ -1,8 +1,11 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { User } from '../interfaces/user.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -55,13 +58,24 @@ export class UsersService extends BaseService<User> {
       data: {
         password: newPassword,
         version: Number(user.version) + 1,
-        updatedAt: Math.floor(Date.now() / 1000),
+        createdAt: user.createdAt,
+        updatedAt: Math.floor(Date.now() / 1000) + 1,
       },
     });
 
     Object.assign(user, updatedUser);
 
     return this.excludePassword(user);
+  }
+
+  async getUserByIdService(id: string) {
+    if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
+
+    const user = await this.getPrismaModel().findUnique({ where: { id } });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
   private excludePassword(user: User): Omit<User, 'password'> {
