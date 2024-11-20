@@ -17,17 +17,28 @@ Home Library is a Node.js and NestJS-powered application built to help manage an
 2.  **Install dependencies:**
     - `npm install`
 3.  **Set environment variables:** Create a `.env` file in the project root and configure it based on your setup. For example:
-    - `PORT1=4000`
-4.  **Run the application:**
 
-    - **Development mode:**
+```bash
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=my_database
+DATABASE_URL=postgresql://postgres:postgres@db:5432/my_database
+```
 
-      - `npm run start:dev`
+4.  **Development mode:**
 
-    - **Production mode:**
+This mode runs in watch mode.
 
-      - `npm run build`
-      - `npm run start:prod`
+```bash
+`npm run docker:up`
+```
+
+If you will have trouble with bd, run following commands in terminal (one bt one):
+
+```bash
+    docker exec -it node-app bash
+    npx prisma migrate dev --name init
+```
 
 ## API Documentation
 
