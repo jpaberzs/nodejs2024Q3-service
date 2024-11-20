@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -44,7 +45,9 @@ export class TracksController extends BaseController<Track> {
 
     return track;
   }
-  @Delete(':id') async deleteTrack(@Param('id') id: string) {
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteTrack(@Param('id') id: string) {
     await this.tracksService.delete(id);
 
     return { statusCode: HttpStatus.NO_CONTENT };
