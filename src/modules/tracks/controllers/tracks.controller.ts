@@ -22,42 +22,31 @@ export class TracksController extends BaseController<Track> {
   }
 
   @Get(':id') async getTrackById(@Param('id') id: string) {
-    try {
-      const track = await this.tracksService.getById(id);
-      if (!track)
-        throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-      return { statusCode: HttpStatus.OK, data: track };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    }
+    const track = await this.tracksService.getById(id);
+
+    if (!track)
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+
+    return track;
   }
   @Post() async createTrack(@Body() createTrackDTO: CreateTrackDTO) {
-    try {
-      const track = await this.tracksService.createTrack(createTrackDTO);
-      return { statusCode: HttpStatus.CREATED, data: track };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+    const track = await this.tracksService.createTrack(createTrackDTO);
+    return track;
   }
   @Put(':id') async updateTrack(
     @Param('id') id: string,
     @Body() updateTrackDTO: UpdateTrackDTO,
   ) {
-    try {
-      const track = await this.tracksService.updateTrack(id, updateTrackDTO);
-      if (!track)
-        throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
-      return { statusCode: HttpStatus.OK, data: track };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
-    }
+    const track = await this.tracksService.updateTrack(id, updateTrackDTO);
+
+    if (!track)
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
+
+    return track;
   }
   @Delete(':id') async deleteTrack(@Param('id') id: string) {
-    try {
-      await this.tracksService.delete(id);
-      return { statusCode: HttpStatus.NO_CONTENT };
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    }
+    await this.tracksService.delete(id);
+
+    return { statusCode: HttpStatus.NO_CONTENT };
   }
 }
