@@ -73,8 +73,6 @@ describe('Tracks (e2e)', () => {
         .delete(tracksRoutes.delete(id))
         .set(commonHeaders);
 
-      console.log(cleanupResponse.body);
-
       expect(cleanupResponse.statusCode).toBe(StatusCodes.NO_CONTENT);
     });
 

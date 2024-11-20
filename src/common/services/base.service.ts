@@ -63,8 +63,6 @@ export class BaseService<T extends { id: string }> {
   }
 
   async delete(id: string): Promise<void> {
-    console.log(id);
-
     if (!isUUID(id)) throw new BadRequestException('Invalid UUID');
 
     const item = await this.getById(id);
