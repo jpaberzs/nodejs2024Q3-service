@@ -20,6 +20,7 @@ https://hub.docker.com/r/jpaberzs/nodejs2024q3-service
 1.  **Clone the repository:**
     - `git clone https://github.com/jpaberzs/nodejs2024Q3-service.git`
     - `cd nodejs2024Q3-service`
+    - `git checkout dev_docker`
 2.  **Install dependencies:**
     - `npm install`
 3.  **Set environment variables:** Create a `.env` file in the project root and configure it based on your setup. For example:
