@@ -1,72 +1,87 @@
-# Home Library Service
+# Home Library
+
+## Project Overview
+
+Home Library is a Node.js and NestJS-powered application built to help manage and organize your personal library. It includes modules for managing users, tracks, artists, albums, and favorites, offering a complete system for interacting with your collection. Additionally, the application integrates Swagger to provide easy-to-use API documentation for developers and users alike.
 
 ## Prerequisites
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
+- Node.js and npm
+- NestJS CLI (for development)
 
-## Downloading
+## Link to Docker Hub repository
 
-```
-git clone {repository URL}
-```
-
-## Installing NPM modules
-
-```
-npm install
+```bash
+https://hub.docker.com/r/jpaberzs/nodejs2024q3-service
 ```
 
-## Running application
+## Setup and Installation
 
-```
-npm start
-```
+1.  **Clone the repository:**
+    - `git clone https://github.com/jpaberzs/nodejs2024Q3-service.git`
+    - `cd nodejs2024Q3-service`
+    - `git checkout dev_docker`
+2.  **Install dependencies:**
+    - `npm install`
+3.  **Set environment variables:** Create a `.env` file in the project root and configure it based on your setup. For example:
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
-
-## Testing
-
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
-```
-npm run test
+```bash
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=my_database
+DATABASE_URL=postgresql://postgres:postgres@db:5432/my_database
 ```
 
-To run only one of all test suites
+4.  **Development mode:**
 
-```
-npm run test -- <path to suite>
-```
+This mode runs in watch mode.
 
-To run all test with authorization
-
-```
-npm run test:auth
+```bash
+`npm run docker:up`
 ```
 
-To run only specific test suite with authorization
+If you will have trouble with bd, run following commands in terminal (one bt one):
 
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
+```bash
+    docker exec -it node-app bash
+    npx prisma migrate dev --name init
 ```
 
+## Audit
+
+To run audit run script in terminal:
+
+```bash
+    npm run docker-audit
 ```
-npm run format
-```
 
-### Debugging in VSCode
+## API Documentation
 
-Press <kbd>F5</kbd> to debug.
+Swagger is used for API documentation. To view the API docs, navigate to `http://localhost:<PORT1>/doc` after starting the application.
 
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+## Scripts
+
+- `npm run build` - Builds the application.
+- `npm run format` - Formats code using Prettier.
+- `npm run lint` - Runs ESLint on the source code.
+- `npm run start` - Starts the application in production mode.
+- `npm run start:dev` - Starts the application in development mode with live reloading.
+- `npm run test` - Runs unit tests with Jest.
+- Additional test scripts for debugging, coverage, and authentication-related tests are also included.
+
+## Technologies Used
+
+- **NestJS** - A progressive Node.js framework.
+- **Swagger** - For generating and viewing API documentation.
+- **Jest** - For unit and end-to-end testing.
+- **ESLint & Prettier** - For code linting and formatting.
+
+## Project Structure
+
+- `src/modules/` - Contains the feature modules (`user`, `track`, `artist`, `album`, and `favs`).
+- `src/app.module.ts` - The root module that imports all feature modules.
+- `src/doc/api.yaml` - Swagger documentation file.
+
+## License
+
+This project is UNLICENSED.
