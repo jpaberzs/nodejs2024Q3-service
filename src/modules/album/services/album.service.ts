@@ -8,7 +8,6 @@ import { BaseService } from 'src/common/services/base.service';
 import { Album } from '../interfaces/album';
 import { v4 as uuidv4, validate as isUUID } from 'uuid';
 import { TracksService } from 'src/modules/tracks/services/tracks.service';
-// import { albumData } from 'src/database/database';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()

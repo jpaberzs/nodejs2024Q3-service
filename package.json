@@ -25,7 +25,8 @@
     "test:tracks": "jest --testMatch \"<rootDir>/tracks.e2e.spec.ts\" --noStackTrace --runInBand",
     "swc": "nest start swc",
     "docker:up": "docker-compose up --build --watch",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "docker-audit": "docker scout cves"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.8",

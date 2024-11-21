@@ -9,6 +9,12 @@ Home Library is a Node.js and NestJS-powered application built to help manage an
 - Node.js and npm
 - NestJS CLI (for development)
 
+## Link to Docker Hub repository
+
+```bash
+https://hub.docker.com/r/jpaberzs/nodejs2024q3-service
+```
+
 ## Setup and Installation
 
 1.  **Clone the repository:**
@@ -38,6 +44,14 @@ If you will have trouble with bd, run following commands in terminal (one bt one
 ```bash
     docker exec -it node-app bash
     npx prisma migrate dev --name init
+```
+
+## Audit
+
+To run audit run script in terminal:
+
+```bash
+    npm run docker-audit
 ```
 
 ## API Documentation

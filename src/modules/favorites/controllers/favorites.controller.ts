@@ -28,11 +28,8 @@ export class FavoritesController {
   @Get()
   async getFavorites() {
     const favorites = await this.favoritesService.getAllFavorites();
+
     return favorites;
-    // try {
-    // } catch (error) {
-    //   throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
   }
 
   @Post('/track/:id')
@@ -53,14 +50,8 @@ export class FavoritesController {
     @Param('id') id: string,
   ) {
     await this.favoritesService.removeFavorite(type, id);
+
     return { statusCode: HttpStatus.NO_CONTENT };
-    // try {
-    // } catch (error) {
-    //   if (error instanceof NotFoundException) {
-    //     throw new HttpException(error.message, HttpStatus.NOT_FOUND);
-    //   }
-    //   throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    // }
   }
 
   @Post('/album/:id')
